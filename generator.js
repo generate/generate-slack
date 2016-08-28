@@ -7,7 +7,7 @@ module.exports = function(app) {
   // return if the generator is already registered
   if (!isValid(app, 'generate-slack')) return;
 
-  app.use(require('generate-project'));
+  app.use(require('generate-defaults'));
 
   /**
    * Generate a `index.js` file to the current working directory. Learn how to [customize
@@ -20,7 +20,7 @@ module.exports = function(app) {
    * @api public
    */
 
-  task(app, 'slack', '**/*', ['project']);
+  task(app, 'slack', '**/*');
 
   /**
    * Alias for running the [slack](#slack) task with the following command:

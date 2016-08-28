@@ -7,6 +7,8 @@ module.exports = function(app) {
   // return if the generator is already registered
   if (!isValid(app, 'generate-slack')) return;
 
+  app.use(require('generate-project'));
+
   /**
    * Generate a `index.js` file to the current working directory. Learn how to [customize
    * behavior(#customization) or override built-in templates.
@@ -18,7 +20,7 @@ module.exports = function(app) {
    * @api public
    */
 
-  task(app, 'slack', 'index.js');
+  task(app, 'slack', '**/*', ['project']);
 
   /**
    * Alias for running the [slack](#slack) task with the following command:
@@ -37,11 +39,17 @@ module.exports = function(app) {
  * Create a task with the given `name` and glob `pattern`
  */
 
-function task(app, name, pattern) {
-  app.task(name, function() {
-    return app.src(pattern, {cwd: __dirname})
-      .pipe(app.renderFile('*'))
-      .pipe(app.conflicts(app.cwd))
-      .pipe(app.dest(app.cwd));
+function task(app, name, pattern, dependencies) {
+  app.task(name, dependencies || [], function(cb) {
+    if (!pattern) return cb();
+    return file(app, pattern);
   });
+}
+
+function file(app, pattern) {
+  var src = app.options.srcBase || path.join(__dirname, 'templates');
+  return app.src(pattern, {cwd: src})
+    .pipe(app.renderFile('*')).on('error', console.log)
+    .pipe(app.conflicts(app.cwd))
+    .pipe(app.dest(app.cwd));
 }

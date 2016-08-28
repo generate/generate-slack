@@ -24,7 +24,7 @@
     "slack"
   ],
   "dependencies": {
-    "generate-package": "^0.6.1",
+    "generate-project": "^0.4.1",
     "is-valid-app": "^0.2.0"
   }
 }

@@ -93,14 +93,19 @@ module.exports = function(app) {
     });
 
     var buffer = '';
+    var error = '';
     var child = spawn('wt', args);
     child.stdout.on('data', function(data) {
       buffer += data;
     });
 
+    child.stderr.on('data', function(data) {
+      error += data;
+    });
+
     child.once('close', function(code) {
       if (code) {
-        return cb(new Error(code));
+        return cb(new Error(error));
       }
       console.log('"' + options.name + '" webtask created.');
 

@@ -22,5 +22,9 @@
   "keywords": [
     "generate",
     "slack"
-  ]
+  ],
+  "dependencies": {
+    "generate-package": "^0.6.1",
+    "is-valid-app": "^0.2.0"
+  }
 }

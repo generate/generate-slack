@@ -1,0 +1,26 @@
+{
+  "name": "generate-slack",
+  "description": "Generate a slack landing page project for sef-serve slack invites to your slack community room.",
+  "version": "0.1.0",
+  "homepage": "https://github.com/generate/generate-slack",
+  "author": "Brian Woodward (https://github.com/doowb)",
+  "repository": "generate/generate-slack",
+  "bugs": {
+    "url": "https://github.com/generate/generate-slack/issues"
+  },
+  "license": "MIT",
+  "files": [
+    "generator.js",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "keywords": [
+    "generate",
+    "slack"
+  ]
+}

@@ -1,6 +1,7 @@
 'use strict';
 
 var questions = require('base-questions');
+var memo = require('memoize-path');
 var extname = require('gulp-extname');
 var spawn = require('cross-spawn');
 
@@ -8,11 +9,24 @@ module.exports = function(app) {
   app.use(questions());
   app.option('layout', 'default');
 
-  app.task('load', function(cb) {
-    app.data('src/data/*.json');
-    app.layouts('src/templates/layouts/*.hbs');
-    app.partials('src/templates/partials/*.hbs');
-    app.pages('src/templates/pages/*.hbs');
+  var cwd = memo(process.cwd())
+  var paths = {
+    src: cwd('src'),
+    det: cwd('_gh_pages')
+  };
+
+  paths.data = paths.src('data');
+  paths.templates = paths.src('templates');
+
+  app.task('data', function(cb) {
+    app.data(paths.data('*.json'));
+    cb();
+  });
+
+  app.task('load', ['data'], function(cb) {
+    app.layouts(paths.templates('layouts/*.hbs').path);
+    app.partials(paths.templates('partials/*.hbs').path);
+    app.pages(paths.templates('pages/*.hbs').path);
     cb();
   });
 
@@ -20,28 +34,52 @@ module.exports = function(app) {
     return app.toStream('pages')
       .pipe(app.renderFile())
       .pipe(extname())
-      .pipe(app.dest('_gh_pages'));
+      .pipe(app.dest(paths.dest()));
   });
 
-  app.task('default', ['build']);
+  app.task('copy', function() {
+    return app.copy('**/*', paths.dest('assets').path, {cwd: paths.src('assets').path});
+  });
 
-  app.task('webtask-invite', function(cb) {
-    console.log();
-    app.question('name', 'What would you like to name the invite webtask?');
-    app.question('team', 'What\'s the slack team name you\'d like to use?');
-    app.question('token', 'What\'s the slack authentication token you\'d like to use?');
-    app.ask(['name', 'team', 'token'], function(err, answers) {
-      if(err) return cb(err);
-      console.log();
-      createInvite(answers, cb);
-    });
+  app.task('clean', function(cb) {
+    del(paths.dest(), cb);
+  });
+
+  app.task('default', ['clean', 'copy', 'build']);
+
+  app.task('webtasks', ['webtask-*']);
+
+  app.task('webtask-invite', ['data'], function(cb) {
+    taskCreate('Creating slack invite webtask:', app.cache.data.questions.invite, createInvite)(cb);
+  });
+
+  app.task('webtask-users', ['data'], function(cb) {
+    taskCreate('Creating slack users webtask:', app.cache.data.questions.users, createUsers)(cb);
   });
 };
+
+function taskCreate(msg, questions, fn) {
+  return function(cb) {
+    console.log();
+    console.log(msg);
+    console.log();
+    var keys = Object.keys(questions);
+    keys.forEach(function(key) {
+      app.question(key, questions[key]);
+    });
+
+    app.ask(keys, function(err, answers) {
+      if(err) return cb(err);
+      console.log();
+      fn(answers, cb);
+    });
+  };
+}
 
 function create(wt, params, options, cb) {
   var args = [
     'create',
-    `node_modules/${wt}/dist/main.js`,
+    `node_modules/slack-${wt}-wt/dist/main.js`,
     '--name', options.name,
     '--secret', `SLACK_TEAM=${options.team}`,
     '--secret', `SLACK_TOKEN=${options.token}`
@@ -52,10 +90,16 @@ function create(wt, params, options, cb) {
     args.push(`${key}=${val}`);
   });
 
+  var buffer = '';
   var child = spawn('wt', args, { stdio: 'inherit' });
+  child.stdout.on('data', function(data) {
+    buffer += data;
+  });
 
   child.once('close', function(code) {
-    console.log();
+    console.log('=============== OUTPUT ================');
+    console.log(buffer);
+    console.log('=============== OUTPUT ================');
     if (code) {
       return cb(new Error(code));
     }
@@ -64,5 +108,9 @@ function create(wt, params, options, cb) {
 }
 
 function createInvite(options, cb) {
-  create('slack-invite-wt', {}, options, cb);
+  create('invite', {}, options, cb);
+}
+
+function createUsers(options, cb) {
+  create('invite', {}, options, cb);
 }

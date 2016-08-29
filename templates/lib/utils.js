@@ -2,8 +2,8 @@
 install:
   devDependencies:
     - 'base-questions@0.7.4'
-    - 'base-watch',
-    - 'browser-sync',
+    - 'base-watch'
+    - 'browser-sync'
     - 'cross-spawn'
     - 'delete'
     - 'gulp-extname'

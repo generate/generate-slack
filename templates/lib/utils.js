@@ -51,6 +51,7 @@ utils.readJSON = function(fp, cb) {
 };
 
 utils.create = function(app, wt, params, options, cb) {
+  var fp = options.datafile;
   var args = [
     'create',
     'node_modules/slack-' + wt + '-wt/dist/main.js',
@@ -89,7 +90,6 @@ utils.create = function(app, wt, params, options, cb) {
     console.log('Setting "site.services.' + wt + '" to "' + url + '"');
     app.data(['site', 'services', wt].join('.'), url);
 
-    var fp = paths.data('site.json').path;
     utils.readJSON(fp, function(err, data) {
       if (err) return cb(err);
       data.services[wt] = url;

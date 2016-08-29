@@ -166,6 +166,7 @@ module.exports = function(app) {
       app.ask(keys, {save: false}, function(err, answers) {
         if(err) return cb(err);
         console.log();
+        answers.datafile = paths.data('site.json').path;
         fn(answers, cb);
       });
     };

@@ -12,7 +12,10 @@ install:
 var utils = require('./lib/utils');
 
 module.exports = function(app) {
+  var browserSync = utils.browserSync.create();
+
   app.use(utils.questions());
+  app.use(utils.watch());
   app.option('layout', 'default');
   app.helper('json', require('./lib/helpers/json'));
 
@@ -24,6 +27,9 @@ module.exports = function(app) {
 
   paths.data = paths.src('data');
   paths.templates = paths.src('templates');
+
+  app.task('default', ['clean', 'copy', 'less', 'build']);
+  app.task('dev', app.series('default', app.parallel(['serve', 'watch'])));
 
   app.task('data', function(cb) {
     app.data(paths.data('*.json').path);
@@ -37,35 +43,23 @@ module.exports = function(app) {
     cb();
   });
 
-  app.task('warn', function(cb) {
-    if (typeof app.get('cache.data.site.services.invite') === 'undefined') {
-      console.log();
-      console.log('[WARNING]:', 'Run `$ assemble webtask-invite` to create the slack invitation service and add the service url to the site data.');
-      console.log();
-    }
-
-    if (typeof app.get('cache.data.site.services.invite') === 'undefined') {
-      console.log();
-      console.log('[WARNING]:', 'Run `$ assemble webtask-users` to create the slack user badge service and add the service url to the site data.');
-      console.log();
-    }
-    cb();
-  });
-
   app.task('build', ['load', 'warn'], function() {
     return app.toStream('pages')
       .pipe(app.renderFile())
       .pipe(utils.extname())
-      .pipe(app.dest(paths.dest()));
+      .pipe(app.dest(paths.dest()))
+      .pipe(browserSync.stream());
   });
 
   app.task('copy', ['copy-*']);
   app.task('copy-img', function() {
-    return app.copy('**/*', paths.dest('img').path, {cwd: paths.src('img').path});
+    return app.copy('**/*', paths.dest('img').path, {cwd: paths.src('img').path})
+      .pipe(browserSync.stream());
   });
 
   app.task('copy-js', function() {
-    return app.copy('**/*', paths.dest('js').path, {cwd: paths.src('js').path});
+    return app.copy('**/*', paths.dest('js').path, {cwd: paths.src('js').path})
+      .pipe(browserSync.stream());
   });
 
   app.task('copy-bootstrap', function() {
@@ -102,13 +96,52 @@ module.exports = function(app) {
     utils.del(paths.dest(), cb);
   });
 
+  app.task('cleanPublish', function(cb) {
+    utils.del('./.publish', {force: true}, cb);
+  });
+
   app.task('less', function() {
     return app.src('site.less', {cwd: paths.src('less').path})
       .pipe(utils.less())
-      .pipe(app.dest(paths.dest('css')));
+      .pipe(app.dest(paths.dest('css')))
+      .pipe(browserSync.stream());
   });
 
-  app.task('default', ['clean', 'copy', 'less', 'build']);
+  app.task('push', function() {
+    return app.src(paths.dest('**/*').path)
+      .pipe(utils.ghPages());
+  });
+
+  app.task('deploy', app.series(['push', 'cleanPublish']));
+
+  app.task('serve', function(cb) {
+    browserSync.init({
+      port: 8080,
+      startPath: 'index.html',
+      server: {
+        baseDir: paths.dest()
+      }
+    }, cb);
+  });
+
+  app.task('watch', function() {
+    app.watch([paths.src('**/*').path], ['build']);
+  });
+
+  app.task('warn', function(cb) {
+    if (typeof app.get('cache.data.site.services.invite') === 'undefined') {
+      console.log();
+      console.log('[WARNING]:', 'Run `$ assemble webtask-invite` to create the slack invitation service and add the service url to the site data.');
+      console.log();
+    }
+
+    if (typeof app.get('cache.data.site.services.users') === 'undefined') {
+      console.log();
+      console.log('[WARNING]:', 'Run `$ assemble webtask-users` to create the slack user badge service and add the service url to the site data.');
+      console.log();
+    }
+    cb();
+  });
 
   app.task('webtasks', ['webtask-*']);
 

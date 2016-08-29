@@ -2,9 +2,12 @@
 install:
   devDependencies:
     - 'base-questions@0.7.4'
+    - 'base-watch',
+    - 'browser-sync',
     - 'cross-spawn'
     - 'delete'
     - 'gulp-extname'
+    - 'gulp-gh-pages'
     - 'gulp-less'
     - 'lazy-cache'
     - 'memoize-path'
@@ -22,9 +25,12 @@ require = utils;
  */
 
 require('base-questions', 'questions');
+require('base-watch', 'watch');
+require('browser-sync');
 require('cross-spawn', 'spawn');
 require('delete', 'del');
 require('gulp-extname', 'extname');
+require('gulp-gh-pages', 'ghPages');
 require('gulp-less', 'less');
 require('memoize-path', 'memo');
 require('read-file', 'read');

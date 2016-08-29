@@ -1,0 +1,17 @@
+{{#if @root.site.related}}
+<!-- Related Projects Grid Section -->
+<section id="related">
+  <div class="container">
+    <div class="row">
+        <div class="col-lg-12 text-center">
+            <h2>Related Projects</h2>
+            <hr class="star-primary">
+        </div>
+    </div>
+    <div class="row">
+    <div class="col-sm-1"></div>
+    {{#each @root.site.related}}{{> related-project this}}{{/each}}
+    </div>
+  </div>
+</section>
+{{/if}}

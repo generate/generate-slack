@@ -54,7 +54,7 @@ utils.create = function(app, wt, params, options, cb) {
   var fp = options.datafile;
   var args = [
     'create',
-    'node_modules/slack-' + wt + '-wt/dist/main.js',
+    'node_modules/slack-' + wt + '-webtask/dist/main.js',
     '--name', options.name,
     '--secret', 'SLACK_TEAM=' + options.team,
     '--secret', 'SLACK_TOKEN=' + options.token

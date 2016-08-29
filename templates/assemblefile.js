@@ -119,7 +119,7 @@ module.exports = function(app) {
         app.question(key, questions[key]);
       });
 
-      app.ask(keys, function(err, answers) {
+      app.ask(keys, {save: false}, function(err, answers) {
         if(err) return cb(err);
         console.log();
         fn(answers, cb);

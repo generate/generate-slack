@@ -36,7 +36,6 @@
       data: {email: $('#email').val()}
     })
     .done(function(result) {
-      console.log(result);
       if (result && result.ok === false) {
         showError(result);
         return;
@@ -72,7 +71,6 @@
     $('#error').text('');
     $('#invite').hide();
 
-    console.log(result);
     $('#success').text('The invitation has been sent! Please check your email to login.');
     $('#success').show();
   }

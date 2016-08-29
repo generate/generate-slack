@@ -37,13 +37,22 @@ module.exports = function(app) {
     cb();
   });
 
-  app.task('build', ['load'], function() {
+  app.task('warn', function(cb) {
     if (typeof app.get('cache.data.site.services.invite') === 'undefined') {
       console.log();
       console.log('[WARNING]:', 'Run `$ assemble webtask-invite` to create the slack invitation service and add the service url to the site data.');
       console.log();
     }
 
+    if (typeof app.get('cache.data.site.services.invite') === 'undefined') {
+      console.log();
+      console.log('[WARNING]:', 'Run `$ assemble webtask-users` to create the slack user badge service and add the service url to the site data.');
+      console.log();
+    }
+    cb();
+  });
+
+  app.task('build', ['load', 'warn'], function() {
     return app.toStream('pages')
       .pipe(app.renderFile())
       .pipe(utils.extname())
@@ -129,60 +138,12 @@ module.exports = function(app) {
     };
   }
 
-  function create(wt, params, options, cb) {
-    var args = [
-      'create',
-      'node_modules/slack-' + wt + '-wt/dist/main.js',
-      '--name', options.name,
-      '--secret', 'SLACK_TEAM=' + options.team,
-      '--secret', 'SLACK_TOKEN=' + options.token
-    ];
-    Object.keys(params).forEach(function(key) {
-      var val = params[key];
-      args.push('--param');
-      args.push(key + '=' + val);
-    });
-
-    var buffer = '';
-    var error = '';
-    var child = utils.spawn('wt', args);
-    child.stdout.on('data', function(data) {
-      buffer += data;
-    });
-
-    child.stderr.on('data', function(data) {
-      error += data;
-    });
-
-    child.once('close', function(code) {
-      if (code) {
-        return cb(new Error(error));
-      }
-      console.log('"' + options.name + '" webtask created.');
-
-      var lines = buffer.split('\n\n').map(function(str) {
-        return str.trim();
-      });
-      var url = lines[lines.length - 1];
-
-      console.log('Setting "site.services.' + wt + '" to "' + url + '"');
-      app.data(['site', 'services', wt].join('.'), url);
-
-      var fp = paths.data('site.json').path;
-      utils.readJSON(fp, function(err, data) {
-        if (err) return cb(err);
-        data.services[wt] = url;
-        utils.writeJSON(fp, data, cb);
-      });
-    });
-  }
-
   function createInvite(options, cb) {
-    create('invite', {}, options, cb);
+    utils.create(app, 'invite', {}, options, cb);
   }
 
   function createUsers(options, cb) {
-    create('users', {}, options, cb);
+    utils.create(app, 'users', {}, options, cb);
   }
 };
 

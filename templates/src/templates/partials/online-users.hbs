@@ -1,7 +1,12 @@
 {{#if @root.site.services.users}}
 <div class="row">
   <div class="col-sm-8 col-sm-offset-2">
-    Currently online: <img src="{{@root.site.services.users}}" style="display:inline;"/>
+    <p>Currently online</p>
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-8 col-sm-offset-2">
+    <img src="{{@root.site.services.users}}" style="display:inline;"/>
   </div>
 </div>
 {{/if}}

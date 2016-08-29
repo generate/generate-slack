@@ -8,6 +8,7 @@ module.exports = function(app) {
   if (!isValid(app, 'generate-slack')) return;
 
   app.use(require('generate-defaults'));
+  app.use(require('generate-install'));
 
   /**
    * Generate a `index.js` file to the current working directory. Learn how to [customize
@@ -20,7 +21,12 @@ module.exports = function(app) {
    * @api public
    */
 
-  task(app, 'slack', '**/*');
+  task(app, 'slack', ['**/*', '!**/img/**/*'], ['copy-img']);
+  app.task('copy-img', function() {
+    var src = app.options.srcBase || path.join(__dirname, 'templates');
+    var dest = path.join(app.cwd, 'src/img');
+    return app.copy('src/img/**/*', dest, {cwd: src});
+  });
 
   /**
    * Alias for running the [slack](#slack) task with the following command:

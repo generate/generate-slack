@@ -4,6 +4,8 @@ install:
     - 'bootstrap'
     - 'jquery'
     - 'font-awesome'
+    - 'slack-invite-wt'
+    - 'slack-users-wt'
 ---
 'use strict';
 

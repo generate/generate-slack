@@ -1,18 +1,20 @@
+---
+install:
+  devDependencies:
+    - 'bootstrap'
+    - 'jquery'
+    - 'font-awesome'
+---
 'use strict';
 
-var questions = require('base-questions');
-var memo = require('memoize-path');
-var del = require('delete');
-var read = require('read-file');
-var writeJSON = require('write-json');
-var extname = require('gulp-extname');
-var spawn = require('cross-spawn');
+var utils = require('./lib/utils');
 
 module.exports = function(app) {
-  app.use(questions());
+  app.use(utils.questions());
   app.option('layout', 'default');
+  app.helper('json', require('./lib/helpers/json'));
 
-  var cwd = memo(process.cwd())
+  var cwd = utils.memo(process.cwd())
   var paths = {
     src: cwd('src'),
     dest: cwd('_gh_pages')
@@ -34,21 +36,68 @@ module.exports = function(app) {
   });
 
   app.task('build', ['load'], function() {
+    if (typeof app.get('cache.data.site.services.invite') === 'undefined') {
+      console.log();
+      console.log('[WARNING]:', 'Run `$ assemble webtask-invite` to create the slack invitation service and add the service url to the site data.');
+      console.log();
+    }
+
     return app.toStream('pages')
       .pipe(app.renderFile())
-      .pipe(extname())
+      .pipe(utils.extname())
       .pipe(app.dest(paths.dest()));
   });
 
-  app.task('copy', function() {
-    return app.copy('**/*', paths.dest('assets').path, {cwd: paths.src('assets').path});
+  app.task('copy', ['copy-*']);
+  app.task('copy-img', function() {
+    return app.copy('**/*', paths.dest('img').path, {cwd: paths.src('img').path});
+  });
+
+  app.task('copy-js', function() {
+    return app.copy('**/*', paths.dest('js').path, {cwd: paths.src('js').path});
+  });
+
+  app.task('copy-bootstrap', function() {
+    return app.copy([
+      'node_modules/bootstrap/dist/**/*',
+      '!**/npm.js',
+      '!**/bootstrap-theme.*',
+      '!**/*.map'
+    ],
+    paths.dest('vendor/bootstrap').path);
+  });
+
+  app.task('copy-jquery', function() {
+    return app.copy([
+      'node_modules/jquery/dist/jquery.js',
+      'node_modules/jquery/dist/jquery.min.js'
+    ],
+    paths.dest('vendor/jquery').path);
+  });
+
+  app.task('copy-font-awesome', function() {
+    return app.copy([
+      'node_modules/font-awesome/**',
+      '!node_modules/font-awesome/**/*.map',
+      '!node_modules/font-awesome/.npmignore',
+      '!node_modules/font-awesome/*.txt',
+      '!node_modules/font-awesome/*.md',
+      '!node_modules/font-awesome/*.json'
+    ],
+    paths.dest('vendor/font-awesome').path);
   });
 
   app.task('clean', function(cb) {
-    del(paths.dest(), cb);
+    utils.del(paths.dest(), cb);
   });
 
-  app.task('default', ['clean', 'copy', 'build']);
+  app.task('less', function() {
+    return app.src('site.less', {cwd: paths.src('less').path})
+      .pipe(utils.less())
+      .pipe(app.dest(paths.dest('css')));
+  });
+
+  app.task('default', ['clean', 'copy', 'less', 'build']);
 
   app.task('webtasks', ['webtask-*']);
 
@@ -94,7 +143,7 @@ module.exports = function(app) {
 
     var buffer = '';
     var error = '';
-    var child = spawn('wt', args);
+    var child = utils.spawn('wt', args);
     child.stdout.on('data', function(data) {
       buffer += data;
     });
@@ -118,10 +167,10 @@ module.exports = function(app) {
       app.data(['site', 'services', wt].join('.'), url);
 
       var fp = paths.data('site.json').path;
-      readJSON(fp, function(err, data) {
+      utils.readJSON(fp, function(err, data) {
         if (err) return cb(err);
         data.services[wt] = url;
-        writeJSON(fp, data, cb);
+        utils.writeJSON(fp, data, cb);
       });
     });
   }
@@ -131,19 +180,7 @@ module.exports = function(app) {
   }
 
   function createUsers(options, cb) {
-    create('invite', {}, options, cb);
-  }
-
-  function readJSON(fp, cb) {
-    read(fp, function(err, content) {
-      if (err) return cb(err);
-      try {
-        cb(null, JSON.parse(content));
-        return;
-      } catch (err) {
-        cb(err);
-      }
-    });
+    create('users', {}, options, cb);
   }
 };
 

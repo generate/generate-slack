@@ -1,4 +1,31 @@
 {
   "title": "<%= ask('site.title') %>",
+  "related": [
+    {
+      "name": "assemble",
+      "img": "img/assemble-logo.png",
+      "url": "https://github.com/assemble/assemble"
+    },
+    {
+      "name": "base",
+      "img": "img/base-logo.png",
+      "url": "https://github.com/node-base/base"
+    },
+    {
+      "name": "generate",
+      "img": "img/generate-logo.png",
+      "url": "https://github.com/generate/generate"
+    },
+    {
+      "name": "update",
+      "img": "img/update-logo.png",
+      "url": "https://github.com/update/update"
+    },
+    {
+      "name": "verb",
+      "img": "img/verb-logo.png",
+      "url": "https://github.com/verbose/verb"
+    }
+  ],
   "services": {}
 }

@@ -10,6 +10,11 @@ module.exports = function(app) {
   app.use(require('generate-defaults'));
   app.use(require('generate-install'));
 
+  app.question('site.team', 'What\'s the name of your slack team?');
+  app.question('site.title', 'What\'s the site\'s title?');
+  app.question('site.twitter', 'What\'s the twitter account associated with your slack team?');
+  app.question('site.github', 'What\'s the github organization associated with your slack team?');
+
   /**
    * Generate a `index.js` file to the current working directory. Learn how to [customize
    * behavior(#customization) or override built-in templates.

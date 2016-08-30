@@ -54,6 +54,7 @@ describe('generate-slack', function() {
     app.option('overwrite', function(file) {
       return /actual/.test(file.path);
     });
+    app.option('site.team', 'doowb');
     app.option('site.title', 'Generate Slack Test');
     app.option('site.twitter', 'doowb');
     app.option('site.github', 'doowb');

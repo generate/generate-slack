@@ -5,9 +5,8 @@
     "token": "What's the slack authentication token you'd like to use?"
   },
   "users": {
-    "name": "What would you like to name the online users webtask?",
+    "name": "What would you like to name the slack users badge webtask?",
     "team": "What's the slack team name you'd like to use?",
-    "token": "What's the slack authentication token you'd like to use?",
-    "template": "Which template would you like to use when creating the badge?"
+    "token": "What's the slack authentication token you'd like to use?"
   }
 }

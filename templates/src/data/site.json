@@ -1,5 +1,6 @@
 {
   "title": "<%= ask('site.title') %>",
+  "team": "<%= ask('site.team') %>",
   "twitter": "<%= ask('site.twitter') %>",
   "github": "<%= ask('site.github') %>",
   "related": [

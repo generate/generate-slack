@@ -48,7 +48,7 @@
 
   function showError(result) {
     $('#success').hide();
-    $('#success').text('');
+    $('#success').html('');
 
     var msg = '';
     switch (result.error) {
@@ -62,16 +62,16 @@
         msg = result.error;
     }
 
-    $('#error').text(msg);
+    $('#error').html(msg);
     $('#error').show();
   }
 
   function showSuccess(result) {
     $('#error').hide();
-    $('#error').text('');
+    $('#error').html('');
     $('#invite').hide();
 
-    $('#success').text('The invitation has been sent! Please check your email to login.');
+    $('#success').html('The invitation has been sent! Please check your email to login.');
     $('#success').show();
   }
 

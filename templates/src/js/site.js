@@ -53,7 +53,7 @@
     var msg = '';
     switch (result.error) {
       case 'already_in_team':
-        msg = 'You\'ve already joined this team.';
+        msg = 'You\'ve already joined this team. <a href="https://' + site.team + '.slack.com">Login here.</a>';
         break;
       case 'already_invited':
         msg = 'You\ve already been invited to this team. Check your email for the invitation.';

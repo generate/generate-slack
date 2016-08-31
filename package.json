@@ -62,7 +62,15 @@
       "assemble",
       "base",
       "generate",
-      "gulp"
+      "gulp",
+      "gulp-gh-pages",
+      "jquery",
+      "update",
+      "verb",
+      "generate-git",
+      "generate-install",
+      "generate-project",
+      "generate-slack"
     ],
     "lint": {
       "reflinks": true

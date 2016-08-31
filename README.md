@@ -32,6 +32,7 @@ Generate a slack landing page project for self-serve slack invites to your slack
   * [Creating webtask.io services](#creating-webtaskio-services)
   * [Modifying the project](#modifying-the-project)
   * [Deploying to Github pages](#deploying-to-github-pages)
+- [Landing pages](#landing-pages)
 - [About](#about)
   * [Related projects](#related-projects)
   * [Community](#community)
@@ -307,6 +308,18 @@ $ assemble deploy
 This uses the [gulp-gh-pages](https://github.com/shinnn/gulp-gh-pages) plugin to deploy to your `gh-pages` branch of your repository. This requires that you've already connected a remote github repository to your folder.
 
 The `push` task uses the [gulp-gh-pages](https://github.com/shinnn/gulp-gh-pages) plugin and may be customized by passing options to the `utils.ghPages()` method. See [gulp-gh-pages](https://github.com/shinnn/gulp-gh-pages) for more options.
+
+## Landing pages
+
+The following landing pages have been created with [generate-slack][].
+
+If you've created a landing page with [generate-slack][] add it [here](docs/landing-pages.md) and submit a pull request.
+
+* [assemble](https://assemble.github.io/slack)
+* [base](https://node-base.github.io/slack)
+* [generate](https://generate.github.io/slack)
+* [update](https://update.github.io/slack)
+* [verb](https://verbose.github.io/slack)
 
 ## About
 

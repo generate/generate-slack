@@ -125,7 +125,7 @@ module.exports = function(app) {
   });
 
   app.task('watch', function() {
-    app.watch([paths.src('**/*').path], ['build']);
+    app.watch([paths.src('**/*').path], ['default']);
   });
 
   app.task('warn', function(cb) {

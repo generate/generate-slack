@@ -23,12 +23,15 @@ Generate a slack landing page project for self-serve slack invites to your slack
 - [Tasks](#tasks)
   * [slack:slack](#slackslack)
   * [slack](#slack)
+- [Recommended usage](#recommended-usage)
 - [Files trees](#files-trees)
   * [Generated files](#generated-files)
   * [Source files](#source-files)
 - [Next steps](#next-steps)
-  * [Running unit tests](#running-unit-tests)
-  * [Publishing your project](#publishing-your-project)
+  * [The assemblefile.js](#the-assemblefilejs)
+  * [Creating webtask.io services](#creating-webtaskio-services)
+  * [Modifying the project](#modifying-the-project)
+  * [Deploying to Github pages](#deploying-to-github-pages)
 - [About](#about)
   * [Related projects](#related-projects)
   * [Community](#community)
@@ -105,7 +108,7 @@ $ gen help
 
 All available tasks.
 
-### [slack:slack](generator.js#L24)
+### [slack:slack](generator.js#L29)
 
 Generate a `index.js` file to the current working directory. Learn how to [customize behavior(#customization) or override built-in templates.
 
@@ -115,7 +118,7 @@ Generate a `index.js` file to the current working directory. Learn how to [custo
 $ gen slack:slack
 ```
 
-### [slack](generator.js#L41)
+### [slack](generator.js#L46)
 
 Alias for running the [slack](#slack) task with the following command:
 
@@ -126,6 +129,18 @@ $ gen slack
 ```
 
 Visit Generate's [documentation for tasks](https://github.com/generate/generate/blob/master/docs/tasks.md).
+
+## Recommended usage
+
+This generator works best in combination with [generate-project](https://github.com/generate/generate-project), [generate-git](https://github.com/generate/generate-git), and [generate-install](https://github.com/generate/generate-install). [generate-install](https://github.com/generate/generate-install) is included so all of it's tasks are included.
+
+The following command is recommended to generate a new project, initialize `git`, generate the files found in this generator, and install the npm dependencies and devDependencies required for the files from this generator:
+
+```bash
+$ gen project git slack slack:install
+```
+
+This command will take you through answering questions about the project you'd like to setup, then specific questions for [generate-slack][], then install the required npm dependencies.
 
 ## Files trees
 
@@ -219,23 +234,79 @@ Source files and/or libraries used by the [default task](#default):
 
 ## Next steps
 
-### Running unit tests
+### The assemblefile.js
 
-It's never too early to begin running unit tests. When you're ready to get started, the following command will ensure the project's dependencies are installed then run all of the unit tests:
+The generated project contains an `assemblefile.js` with pre-defined tasks that can be used for creating [webtask.io](https://webtask.io) services, compiling less to css, building html pages, and deploying to github.
 
-```sh
-$ npm install && test
+To run the tasks in the `assemblefile.js` install [assemble](https://github.com/assemble/assemble) globally with the following command (if it's not already installed):
+
+```bash
+$ npm install assemble --global
 ```
 
-### Publishing your project
+The following sections will go into details about the provided tasks.
 
-If you're tests are passing and you're ready to publish your project to [npm](https://www.npmjs.com), you can do that now with the following command:
+### Creating webtask.io services
 
-**Are you sure you're ready?!**
+There are 2 [webtask.io](https://webtask.io) services that need to be configured and deployed before thie invite form will work. See [webtask.io](https://webtask.io) for details on creating an account and install the [webtask command line tool](https://github.com/auth0/wt-cli).
 
-```sh
-$ npm publish
+After the webtask.io command line tool is installed and you're logged in, run the following command to configure and deploy the webtask services:
+
+```bash
+$ assemble webtasks
 ```
+
+This will run the 2 individual tasks (`webtask-invite` and `webtask-users`). Both tasks will prompt you for information needed to deploy the webtasks:
+
+* What would you like to name the webtask? (provide a unique name)
+* What's the slack team name you'd like to use?
+* What's the slack authentication token you'd like to use?
+
+The slack team name and slack authentication token will need to be created through [slack](https://slack.com) before deploying the webtask services.
+
+When the services are deployed, a url is provided for the service. These urls will be automatically added to the `src/data/site.json` file under the `site.services` property. This `json` file is used in the assemble build later when creating the html page for the invite form.
+
+The next section provides more information on the parts for the assemble project and how the invite form is built.
+
+### Modifying the project
+
+The generated project is an [assemble](https://github.com/assemble/assemble) project that contains an `assemblefile.js` with tasks for creating html files, the `src` files used for creating the html files, and a `lib` folder with utils and helpers used during the assemble build.
+
+A default theme is provided based on [this startbootstrap.com theme](https://startbootstrap.com/template-overviews/freelancer/) and contains logos from other [toolkit](https://github.com/node-toolkit) projects like [assemble](https://github.com/assemble/assemble), [base](https://github.com/node-base/base), [generate](https://github.com/generate/generate), [update](https://github.com/update/update), and [verb](https://github.com/verbose/verb).
+
+The easiest way to change the colors in the theme is to update the values in `src/less/variables.less`. The main logo shown above the invite form can be swapped out by changing `src/img/logo.png`. The related projects section can be changed by updating the `related` property in the `src/data/site.json` file.
+
+Main html structure is found in `src/templates/layouts/default.hbs`. The invite form page is created with partials used in `src/templates/pages/index.hbs`.
+
+Custom javascript logic that makes the invite form work is found in `src/js/site.js`. This is basic [jquery](https://jquery.com) using ajax and posting data to invite webtask service created in the section above.
+
+To build the `index.html` page, run the following command:
+
+```bash
+$ assemble
+```
+
+This run the `default` task which runs `clean`, `copy`, `less`, and `build`. The site files will be built into the `_gh_pages` folder.
+
+For development you can run a server and get live reloads and file watching by running the following command:
+
+```bash
+$ assemble dev
+```
+
+When you're finished customizing your invite form, see the following section for deployment information.
+
+### Deploying to Github pages
+
+Once the site is ready, the webtask services have been deploy, and your slack team is ready to start inviting users, use the following command to deploy your site to the `gh-pages` branch of your repository:
+
+```bash
+$ assemble deploy
+```
+
+This uses the [gulp-gh-pages](https://github.com/shinnn/gulp-gh-pages) plugin to deploy to your `gh-pages` branch of your repository. This requires that you've already connected a remote github repository to your folder.
+
+The `push` task uses the [gulp-gh-pages](https://github.com/shinnn/gulp-gh-pages) plugin and may be customized by passing options to the `utils.ghPages()` method. See [gulp-gh-pages](https://github.com/shinnn/gulp-gh-pages) for more options.
 
 ## About
 
@@ -283,4 +354,4 @@ Released under the [MIT license](https://github.com/generate/generate-slack/blob
 
 ***
 
-_This file was generated by [verb-generate-readme](https://github.com/verbose/verb-generate-readme), v0.1.30, on August 29, 2016._
+_This file was generated by [verb-generate-readme](https://github.com/verbose/verb-generate-readme), v0.1.30, on August 31, 2016._

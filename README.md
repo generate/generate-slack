@@ -141,7 +141,7 @@ The following command is recommended to generate a new project, initialize `git`
 $ gen project git slack slack:install
 ```
 
-This command will take you through answering questions about the project you'd like to setup, then specific questions for [generate-slack][], then install the required npm dependencies.
+This command will take you through answering questions about the project you'd like to setup, then specific questions for [generate-slack](https://github.com/generate/generate-slack), then install the required npm dependencies.
 
 ## Files trees
 
@@ -311,9 +311,9 @@ The `push` task uses the [gulp-gh-pages](https://github.com/shinnn/gulp-gh-pages
 
 ## Landing pages
 
-The following landing pages have been created with [generate-slack][].
+The following landing pages have been created with [generate-slack](https://github.com/generate/generate-slack).
 
-If you've created a landing page with [generate-slack][] add it [here](docs/landing-pages.md) and submit a pull request.
+If you've created a landing page with [generate-slack](https://github.com/generate/generate-slack) add it [here](docs/landing-pages.md) and submit a pull request.
 
 * [assemble](https://assemble.github.io/slack)
 * [base](https://node-base.github.io/slack)

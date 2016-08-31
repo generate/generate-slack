@@ -11,18 +11,17 @@
   "license": "MIT",
   "files": [
     "generator.js",
-    "LICENSE"
+    "index.js",
+    "LICENSE",
+    "templates"
   ],
+  "main": "index.js",
   "engines": {
     "node": ">=0.10.0"
   },
   "scripts": {
     "test": "mocha"
   },
-  "keywords": [
-    "generate",
-    "slack"
-  ],
   "dependencies": {
     "generate-defaults": "^0.6.0",
     "generate-install": "^0.2.1",
@@ -39,6 +38,35 @@
     "verb-generate-readme": "^0.1.30",
     "verb-trees": "^0.1.0"
   },
+  "keywords": [
+    "assemble",
+    "bootstrap",
+    "community",
+    "generate",
+    "gh-pages",
+    "github",
+    "github-pages",
+    "invite",
+    "invite-form",
+    "invites",
+    "jquery",
+    "pages",
+    "serverless",
+    "site",
+    "slack",
+    "slack-community",
+    "slack-invite",
+    "slack-invites",
+    "slack-team",
+    "slack-users",
+    "slackin",
+    "static",
+    "static-site",
+    "team",
+    "users",
+    "webtask",
+    "webtaskio"
+  ],
   "verb": {
     "toc": {
       "method": "preWrite",
@@ -55,22 +83,30 @@
     ],
     "related": {
       "list": [
-        "generate"
+        "assemble",
+        "generate",
+        "generate-git",
+        "generate-install",
+        "generate-project",
+        "gulp-plugin-webtask",
+        "slack-invite-webtask",
+        "slack-users",
+        "slack-users-webtask"
       ]
     },
     "reflinks": [
       "assemble",
       "base",
       "generate",
+      "generate-git",
+      "generate-install",
+      "generate-project",
+      "generate-slack",
       "gulp",
       "gulp-gh-pages",
       "jquery",
       "update",
-      "verb",
-      "generate-git",
-      "generate-install",
-      "generate-project",
-      "generate-slack"
+      "verb"
     ],
     "lint": {
       "reflinks": true
